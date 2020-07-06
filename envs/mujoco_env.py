@@ -25,7 +25,8 @@ from gym import spaces
 from gym.utils import seeding
 import numpy as np
 
-from pddm.envs.simulation.sim_robot import MujocoSimRobot, RenderMode
+from envs.external.pddm.envs.simulation.sim_robot import MujocoSimRobot
+from envs.external.pddm.envs.simulation.renderer import RenderMode
 
 DEFAULT_RENDER_SIZE = 480
 
@@ -78,14 +79,14 @@ class MujocoEnv(gym.Env):
         # HACK: MJRL is still using gym 0.9.x so we can't provide a dtype.
         try:
             self.action_space = spaces.Box(
-                act_lower, act_upper, dtype=np.float32)
+                act_lower, act_upper, dtype=np.float64)
             if isinstance(observation, collections.Mapping):
                 self.observation_space = spaces.Dict({
-                k: spaces.Box(-np.inf, np.inf, shape=v.shape, dtype=np.float32) for k, v in observation.items()})
+                k: spaces.Box(-np.inf, np.inf, shape=v.shape, dtype=np.float64) for k, v in observation.items()})
             else:
                 self.obs_dim = np.sum([o.size for o in observation]) if type(observation) is tuple else observation.size
                 self.observation_space = spaces.Box(
-                -np.inf, np.inf, observation.shape, dtype=np.float32)
+                -np.inf, np.inf, observation.shape, dtype=np.float64)
 
         except TypeError:
             # Fallback case for gym 0.9.x

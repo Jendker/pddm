@@ -17,9 +17,8 @@ import numpy as np
 from gym import utils
 import enum
 
-from pddm.envs import mujoco_env
-from pddm.envs.robot import Robot
-from pddm.envs.utils.quatmath import euler2quat, quatDiff2Vel
+from envs.external.pddm.envs.robot import Robot
+from envs.external.pddm.envs import mujoco_env
 
 ## Define the task enum
 class Task(enum.Enum):
@@ -309,7 +308,8 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         env_info = {'time': self.time,
                     'obs_dict': self.obs_dict,
                     'rewards':self.reward_dict,
-                    'score':score}
+                    'score':score,
+                    'goal_achieved':False}
 
         return obs, reward, done, env_info
 
@@ -431,3 +431,12 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             goal_traj = np.array(goal_traj)
 
         return goal_traj
+
+    def evaluate_success(self, paths):
+        num_success = 0
+        num_paths = len(paths)
+        for path in paths:
+            if np.sum(path['env_infos']['goal_achieved']) > 25:  # door open for 25 steps
+                num_success += 1
+        success_percentage = num_success*100.0/num_paths
+        return success_percentage

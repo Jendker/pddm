@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gym.envs.registration import register
-
-register(
-    id='pddm_baoding-v0',
-    entry_point='pddm.envs.baoding.baoding_env:BaodingEnv',
-    max_episode_steps=1000,
-)
+# import pddm.envs.cheetah
+# import pddm.envs.ant
+# import pddm.envs.dclaw
+import envs.external.pddm.envs.baoding
+# import pddm.envs.cube

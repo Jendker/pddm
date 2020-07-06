@@ -17,8 +17,8 @@
 import os
 from typing import Dict, Optional
 
-from pddm.envs.simulation import module
-from pddm.envs.simulation.renderer import MjPyRenderer, RenderMode
+from envs.external.pddm.envs.simulation import module
+from envs.external.pddm.envs.simulation.renderer import MjPyRenderer
 
 
 class MujocoSimRobot:

@@ -14,12 +14,11 @@
 
 import abc
 import enum
-import sys
 from typing import Dict, Optional
 
 import numpy as np
 
-from pddm.envs.simulation import module
+from envs.external.pddm.envs.simulation import module
 
 # Default window dimensions.
 DEFAULT_WINDOW_WIDTH = 1024

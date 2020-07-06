@@ -12,25 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: pddm-env
-channels:
-- pytorch
-- defaults
-- conda-forge
-dependencies:
-- python=3.5
-- mkl-service=1.1.2
-- tabulate=0.7.5
-- termcolor
-- pip:
-  - click
-  - gym==0.10.11
-  - ipdb==0.11
-  - matplotlib==2.1.2
-  - mujoco-py==1.50.1.*
-  - pip==18.0
-  - pyyaml==3.12
-  - tqdm==4.25.0
-  - wheel==0.30.0
-  - scipy==1.0.0
-  - tensorflow==1.12.0
+from gym.envs.registration import register
+
+register(
+    id='pddm_baoding-v0',
+    entry_point='envs.external.pddm.envs.baoding.baoding_env:BaodingEnv',
+    max_episode_steps=1000,
+)
