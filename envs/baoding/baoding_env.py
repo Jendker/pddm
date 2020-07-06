@@ -201,8 +201,8 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         #return
         if not batch_mode:
-            return self.reward_dict['r_total'][0], dones[0]
-        return self.reward_dict['r_total'], dones
+            return self.reward_dict['r_total'][0], bool(dones[0])
+        return self.reward_dict['r_total'], bool(dones)
 
     def get_score(self, obs):
 
