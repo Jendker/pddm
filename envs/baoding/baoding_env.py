@@ -179,10 +179,10 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         if self.which_task==Task.MOVE_TO_LOCATION:
             is_fall = is_fall_1 #only care about ball #1
-            self.reward_dict['drop_penalty'] = -500 * is_fall
+            self.reward_dict['drop_penalty'] = 0 * is_fall  # was -500
         else:
             is_fall = np.logical_or(is_fall_1, is_fall_2) #keep both balls up
-            self.reward_dict['drop_penalty'] = -500 * is_fall
+            self.reward_dict['drop_penalty'] = 0 * is_fall  # was -500
 
         #done based on is_fall
         dones = (is_fall==1) if not self.startup else zeros
@@ -193,16 +193,24 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         wrist_too_high[wrist_angle>wrist_threshold] = 1
         self.reward_dict['wrist_angle'] = -10 * wrist_too_high
 
+        self.reward_dict['keep_positive'] = 1
+
         #total rewards
         if self.which_task==Task.MOVE_TO_LOCATION:
             self.reward_dict['r_total'] = 5*self.reward_dict['pos_dist_1'] + self.reward_dict['drop_penalty']
         else:
-            self.reward_dict['r_total'] = 5*self.reward_dict['pos_dist_1'] + 5*self.reward_dict['pos_dist_2'] + self.reward_dict['drop_penalty'] + self.reward_dict['wrist_angle']
+            self.reward_dict['r_total'] = 5*self.reward_dict['pos_dist_1'] + 5*self.reward_dict['pos_dist_2'] + self.reward_dict['drop_penalty'] + self.reward_dict['wrist_angle'] + \
+                self.reward_dict['keep_positive']
 
         #return
         if not batch_mode:
-            return self.reward_dict['r_total'][0], bool(dones[0])
-        return self.reward_dict['r_total'], bool(dones)
+            reward = self.reward_dict['r_total'][0]
+            done = bool(dones[0])
+        else:
+            reward = self.reward_dict['r_total']
+            done = bool(dones)
+        if reward < 0: reward = 0
+        return reward, done
 
     def get_score(self, obs):
 
