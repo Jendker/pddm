@@ -165,8 +165,10 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # position difference from the desired
         pos_dist_1 = np.linalg.norm(obj1_pos[:,:2] - target1_pos, axis = 1)
         pos_dist_2 = np.linalg.norm(obj2_pos[:,:2] - target2_pos, axis = 1)
-        self.reward_dict['pos_dist_1'] = -pos_dist_1
-        self.reward_dict['pos_dist_2'] = -pos_dist_2
+        self.reward_dict['pos_dist_1'] = -pos_dist_1 * 1.5
+        self.reward_dict['pos_dist_2'] = -pos_dist_2 * 1.5
+
+        self.reward_dict['target_bonus'] = (int(pos_dist_1 < 0.02) + int(pos_dist_2 < 0.02)) * 0.5
 
         #height
         is_fall_1 = zeros
@@ -200,7 +202,7 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.reward_dict['r_total'] = 5*self.reward_dict['pos_dist_1'] + self.reward_dict['drop_penalty']
         else:
             self.reward_dict['r_total'] = 5*self.reward_dict['pos_dist_1'] + 5*self.reward_dict['pos_dist_2'] + self.reward_dict['drop_penalty'] + self.reward_dict['wrist_angle'] + \
-                self.reward_dict['keep_positive']
+                self.reward_dict['keep_positive'] + self.reward_dict['target_bonus']
 
         #return
         if not batch_mode:
@@ -354,7 +356,9 @@ class BaodingEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         self.obs_dict['object2_pos'], #3
                         self.obs_dict['object2_velp'], #3
                         self.obs_dict['target1_pos'], #2
-                        self.obs_dict['target2_pos'] #2
+                        self.obs_dict['target2_pos'], #2
+                        self.obs_dict['target1_pos'] - self.obs_dict['object1_pos'][:2], #2
+                        self.obs_dict['target2_pos'] - self.obs_dict['object2_pos'][:2] #2
                         ])
 
     def reset_model(self):
